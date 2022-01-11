@@ -179,6 +179,11 @@ startupProbe:
   successThreshold: 1
   failureThreshold: 30
 
+## @param affinity Affinity for pod assignment
+## Ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#affinity-and-anti-affinity
+##
+affinity: {}
+
 resources: {}
  # requests:
  #   cpu: "100m"
@@ -191,6 +196,25 @@ nodeSelector: {}
 
 tolerations: []
 
+## LDAP containers' SecurityContext
+## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
+## @param podSecurityContext.enabled Enabled Keykloak pods' Security Context
+## @param podSecurityContext.fsGroup Set Keykloak pod's Security Context fsGroup
+##
+podSecurityContext:
+  enabled: true
+  fsGroup: 911
+
+## LDAP pods' Security Context
+## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container
+## @param containerSecurityContext.enabled Enabled Keykloak containers' Security Context
+## @param containerSecurityContext.runAsUser Set Keykloak container's Security Context runAsUser
+## @param containerSecurityContext.runAsNonRoot Set Keykloak container's Security Context runAsNonRoot
+##
+containerSecurityContext:
+  enabled: true
+  runAsUser: 911
+  runAsNonRoot: true
 
 ## test container details
 test:

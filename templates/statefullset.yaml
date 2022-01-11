@@ -40,6 +40,9 @@ spec:
         - name: init-chmod-secret
           image: alpine
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          {{- if .Values.containerSecurityContext.enabled }}
+          securityContext: {{- omit .Values.containerSecurityContext "enabled" | toYaml | nindent 12 }}
+          {{- end }}
           command:
             - sh
             - -c
@@ -56,6 +59,9 @@ spec:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          {{- if .Values.containerSecurityContext.enabled }}
+          securityContext: {{- omit .Values.containerSecurityContext "enabled" | toYaml | nindent 12 }}
+          {{- end }}
           args:
             - -l
             - {{ .Values.logLevel }}
@@ -155,7 +161,13 @@ spec:
       nodeSelector:
 {{ toYaml . | indent 8 }}
     {{- end }}
-      affinity: 
+      affinity:
+        {{- if .Values.affinity.nodeAffinity }}
+        nodeAffinity: {{ .Values.affinity.nodeAffinity | toYaml | nindent 10 }}
+        {{- end }}
+        {{- if .Values.affinity.podAffinity }}
+        podAffinity: {{ .Values.affinity.podAffinity | toYaml | nindent 10 }}
+        {{- end }}
         podAntiAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
           - topologyKey: kubernetes.io/hostname
@@ -163,7 +175,10 @@ spec:
               matchLabels:
                 app: {{ template "openldap.fullname" . }}
                 release: {{ .Release.Name }}
-    {{- with .Values.tolerations }}
+      {{- if .Values.podSecurityContext.enabled }}
+      securityContext: {{- omit .Values.podSecurityContext "enabled" | toYaml | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
       tolerations:
 {{ toYaml . | indent 8 }}
     {{- end }}
